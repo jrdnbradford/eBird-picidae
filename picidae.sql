@@ -148,14 +148,68 @@ CREATE TABLE picidae.drumlin_poly AS
     FROM picidae.drumlin_parcels;
 
 CREATE TABLE picidae.drumlin_sightings AS
-SELECT sightings.*
-FROM picidae.ma_picidae sightings, picidae.drumlin_poly
-WHERE ST_Contains(drumlin_poly.geom, sightings.geom);
+    SELECT sightings.*
+    FROM picidae.ma_picidae sightings, picidae.drumlin_poly
+    WHERE ST_Contains(drumlin_poly.geom, sightings.geom);
 
 SELECT SUM("individualCount") FROM picidae.drumlin_sightings;
 SELECT year, SUM("individualCount") FROM picidae.drumlin_sightings
 WHERE year IN (2011, 2016, 2021)
 GROUP BY year;
+
+CREATE TABLE picidae.drumlin_sightings_2011 AS
+    SELECT *
+    FROM picidae.drumlin_sightings
+    WHERE year = 2011;
+
+-- eBirders have a tendency to set a single lat/lon point as the spot for all
+-- of their sightings. Tables with '_scatter' introduce a slight random scatter
+-- to points for better visualization than opacity changes allow.
+CREATE TABLE picidae.drumlin_sightings_2011_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.drumlin_sightings_2011
+    ) p;
+
+CREATE TABLE picidae.drumlin_sightings_2016 AS
+    SELECT *
+    FROM picidae.drumlin_sightings
+    WHERE year = 2016;
+
+CREATE TABLE picidae.drumlin_sightings_2016_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.drumlin_sightings_2016
+    ) p;
+
+CREATE TABLE picidae.drumlin_sightings_2021 AS
+    SELECT *
+    FROM picidae.drumlin_sightings
+    WHERE year = 2021;
+
+CREATE TABLE picidae.drumlin_sightings_2021_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.drumlin_sightings_2021
+    ) p;
 
 -- BROADMOOR
 -- Create tables with Broadmoor sightings
@@ -170,14 +224,65 @@ CREATE TABLE picidae.broadmoor_poly AS
     FROM picidae.broadmoor_parcels;
 
 CREATE TABLE picidae.broadmoor_sightings AS
-SELECT sightings.*
-FROM picidae.ma_picidae sightings, picidae.broadmoor_poly
-WHERE ST_Contains(broadmoor_poly.geom, sightings.geom);
+    SELECT sightings.*
+    FROM picidae.ma_picidae sightings, picidae.broadmoor_poly
+    WHERE ST_Contains(broadmoor_poly.geom, sightings.geom);
 
 SELECT SUM("individualCount") FROM picidae.broadmoor_sightings;
 SELECT year, SUM("individualCount") FROM picidae.broadmoor_sightings
 WHERE year IN (2011, 2016, 2021)
 GROUP BY year;
+
+CREATE TABLE picidae.broadmoor_sightings_2011 AS
+    SELECT *
+    FROM picidae.broadmoor_sightings
+    WHERE year = 2011;
+
+CREATE TABLE picidae.broadmoor_sightings_2011_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.broadmoor_sightings_2011
+    ) p;
+
+CREATE TABLE picidae.broadmoor_sightings_2016 AS
+    SELECT *
+    FROM picidae.broadmoor_sightings
+    WHERE year = 2016;
+
+CREATE TABLE picidae.broadmoor_sightings_2016_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.broadmoor_sightings_2016
+    ) p;
+
+CREATE TABLE picidae.broadmoor_sightings_2021 AS
+    SELECT *
+    FROM picidae.broadmoor_sightings
+    WHERE year = 2021;
+
+CREATE TABLE picidae.broadmoor_sightings_2021_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.broadmoor_sightings_2021
+    ) p;
 
 -- IPSWICH
 -- Create tables with Ipswich River sightings
@@ -194,11 +299,62 @@ CREATE TABLE picidae.ipswich_poly AS
     FROM picidae.ipswich_parcels;
 
 CREATE TABLE picidae.ipswich_sightings AS
-SELECT sightings.*
-FROM picidae.ma_picidae sightings, picidae.ipswich_poly
-WHERE ST_Contains(ipswich_poly.geom, sightings.geom);
+    SELECT sightings.*
+    FROM picidae.ma_picidae sightings, picidae.ipswich_poly
+    WHERE ST_Contains(ipswich_poly.geom, sightings.geom);
 
 SELECT SUM("individualCount") FROM picidae.ipswich_sightings;
 SELECT year, SUM("individualCount") FROM picidae.ipswich_sightings
 WHERE year IN (2011, 2016, 2021)
 GROUP BY year;
+
+CREATE TABLE picidae.ipswich_sightings_2011 AS
+    SELECT *
+    FROM picidae.ipswich_sightings
+    WHERE year = 2011;
+
+CREATE TABLE picidae.ipswich_sightings_2011_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.ipswich_sightings_2011
+    ) p;
+
+CREATE TABLE picidae.ipswich_sightings_2016 AS
+    SELECT *
+    FROM picidae.ipswich_sightings
+    WHERE year = 2016;
+
+CREATE TABLE picidae.ipswich_sightings_2016_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.ipswich_sightings_2016
+    ) p;
+
+CREATE TABLE picidae.ipswich_sightings_2021 AS
+    SELECT *
+    FROM picidae.ipswich_sightings
+    WHERE year = 2021;
+
+CREATE TABLE picidae.ipswich_sightings_2021_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.ipswich_sightings_2021
+    ) p;
