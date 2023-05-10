@@ -163,8 +163,24 @@ CREATE TABLE picidae.drumlin_sightings_2011 AS
     WHERE year = 2011;
 
 -- eBirders have a tendency to set a single lat/lon point as the spot for all
--- of their sightings. Tables with '_scatter' introduce a slight random scatter
--- to points for better visualization than opacity changes allow.
+-- of their sightings
+SELECT year, "recordedBy", COUNT(*) AS count, geom
+FROM picidae.drumlin_sightings
+WHERE year IN (2011, 2016, 2021)
+GROUP BY year, "recordedBy", geom
+ORDER BY count DESC;
+
+-- One particular avid eBirder who tends to use the same coordinates
+-- even over years
+SELECT year, month, day, COUNT(*) AS count
+FROM picidae.drumlin_sightings
+WHERE "recordedBy" = 'obsr182792'
+GROUP BY year, month, day
+ORDER BY count DESC;
+
+-- Tables with '_scatter' introduce a slight random scatter
+-- to grouped points made by eBirders such as obsr182792
+-- for better visualization than opacity changes allow.
 CREATE TABLE picidae.drumlin_sightings_2011_scatter AS
     SELECT ST_SetSRID(ST_MakePoint(
          ST_X(geom) + rad * SIND(ang),
