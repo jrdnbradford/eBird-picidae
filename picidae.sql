@@ -55,6 +55,18 @@ ADD COLUMN geom geometry(Point, 4326);
 UPDATE picidae.ma_picidae
 SET geom = ST_SetSRID(ST_MakePoint("decimalLongitude", "decimalLatitude"), 4326);
 
+-- Add a season column for grouping
+ALTER TABLE picidae.ma_picidae
+ADD COLUMN season varchar;
+UPDATE picidae.ma_picidae
+SET season =
+    (CASE
+        WHEN month in (12, 1, 2) THEN 'winter'
+        WHEN month in (3, 4, 5) THEN 'spring'
+        WHEN month in (6, 7, 8) THEN 'summer'
+        WHEN month in (9, 10, 11) THEN 'autumn'
+     END);
+
 -- Total observations by species over all MA data
 SELECT species, SUM("individualCount") AS ma_observation_count
 FROM picidae.ma_picidae
@@ -64,6 +76,11 @@ ORDER BY ma_observation_count DESC;
 -- Total individual sightings
 SELECT SUM("individualCount") AS ma_observation_count
 FROM picidae.ma_picidae;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS ma_observation_count
+FROM picidae.ma_picidae
+GROUP BY season;
 
 -- Total observations species
 SELECT COUNT(DISTINCT(species)) FROM picidae.ma_picidae;
@@ -147,6 +164,7 @@ CREATE TABLE picidae.drumlin_poly AS
     SELECT ST_Transform(ST_Union(ST_SnapToGrid(drumlin_parcels.geom,0.0001)), 4326) AS geom
     FROM picidae.drumlin_parcels;
 
+DROP TABLE IF EXISTS picidae.drumlin_sightings;
 CREATE TABLE picidae.drumlin_sightings AS
     SELECT sightings.*
     FROM picidae.ma_picidae sightings, picidae.drumlin_poly
@@ -157,10 +175,28 @@ SELECT year, SUM("individualCount") FROM picidae.drumlin_sightings
 WHERE year IN (2011, 2016, 2021)
 GROUP BY year;
 
+DROP TABLE IF EXISTS picidae.drumlin_sightings_2011;
 CREATE TABLE picidae.drumlin_sightings_2011 AS
     SELECT *
     FROM picidae.drumlin_sightings
     WHERE year = 2011;
+
+-- Distinct eBirders
+SELECT COUNT(DISTINCT "recordedBy") FROM picidae.drumlin_sightings_2011;
+
+-- Total woodpecker sightings
+SELECT SUM("individualCount") FROM picidae.drumlin_sightings_2011;
+
+-- Total sightings of each species
+SELECT species, SUM("individualCount") AS total
+FROM picidae.drumlin_sightings_2011
+GROUP BY species
+ORDER BY total DESC;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS observation_count
+FROM picidae.drumlin_sightings_2011
+GROUP BY season;
 
 -- eBirders have a tendency to set a single lat/lon point as the spot for all
 -- of their sightings
@@ -193,10 +229,28 @@ CREATE TABLE picidae.drumlin_sightings_2011_scatter AS
         FROM picidae.drumlin_sightings_2011
     ) p;
 
+DROP TABLE IF EXISTS picidae.drumlin_sightings_2016;
 CREATE TABLE picidae.drumlin_sightings_2016 AS
     SELECT *
     FROM picidae.drumlin_sightings
     WHERE year = 2016;
+
+-- Distinct eBirders
+SELECT COUNT(DISTINCT "recordedBy") FROM picidae.drumlin_sightings_2016;
+
+-- Total woodpecker sightings
+SELECT SUM("individualCount") FROM picidae.drumlin_sightings_2016;
+
+-- Total sightings of each species
+SELECT species, SUM("individualCount") AS total
+FROM picidae.drumlin_sightings_2016
+GROUP BY species
+ORDER BY total DESC;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS observation_count
+FROM picidae.drumlin_sightings_2016
+GROUP BY season;
 
 CREATE TABLE picidae.drumlin_sightings_2016_scatter AS
     SELECT ST_SetSRID(ST_MakePoint(
@@ -210,10 +264,28 @@ CREATE TABLE picidae.drumlin_sightings_2016_scatter AS
         FROM picidae.drumlin_sightings_2016
     ) p;
 
+DROP TABLE IF EXISTS picidae.drumlin_sightings_2021;
 CREATE TABLE picidae.drumlin_sightings_2021 AS
     SELECT *
     FROM picidae.drumlin_sightings
     WHERE year = 2021;
+
+-- Distinct eBirders
+SELECT COUNT(DISTINCT "recordedBy") FROM picidae.drumlin_sightings_2021;
+
+-- Total woodpecker sightings
+SELECT SUM("individualCount") FROM picidae.drumlin_sightings_2021;
+
+-- Total sightings of each species
+SELECT species, SUM("individualCount") AS total
+FROM picidae.drumlin_sightings_2021
+GROUP BY species
+ORDER BY total DESC;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS observation_count
+FROM picidae.drumlin_sightings_2021
+GROUP BY season;
 
 CREATE TABLE picidae.drumlin_sightings_2021_scatter AS
     SELECT ST_SetSRID(ST_MakePoint(
@@ -239,6 +311,7 @@ CREATE TABLE picidae.broadmoor_poly AS
     SELECT ST_Transform(ST_Union(ST_SnapToGrid(broadmoor_parcels.geom,0.0001)), 4326) AS geom
     FROM picidae.broadmoor_parcels;
 
+DROP TABLE IF EXISTS picidae.broadmoor_sightings;
 CREATE TABLE picidae.broadmoor_sightings AS
     SELECT sightings.*
     FROM picidae.ma_picidae sightings, picidae.broadmoor_poly
@@ -249,10 +322,28 @@ SELECT year, SUM("individualCount") FROM picidae.broadmoor_sightings
 WHERE year IN (2011, 2016, 2021)
 GROUP BY year;
 
+DROP TABLE IF EXISTS picidae.broadmoor_sightings_2011;
 CREATE TABLE picidae.broadmoor_sightings_2011 AS
     SELECT *
     FROM picidae.broadmoor_sightings
     WHERE year = 2011;
+
+-- Distinct eBirders
+SELECT COUNT(DISTINCT "recordedBy") FROM picidae.broadmoor_sightings_2011;
+
+-- Total woodpecker sightings
+SELECT SUM("individualCount") FROM picidae.broadmoor_sightings_2011;
+
+-- Total sightings of each species
+SELECT species, SUM("individualCount") AS total
+FROM picidae.broadmoor_sightings_2011
+GROUP BY species
+ORDER BY total DESC;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS observation_count
+FROM picidae.broadmoor_sightings_2011
+GROUP BY season;
 
 CREATE TABLE picidae.broadmoor_sightings_2011_scatter AS
     SELECT ST_SetSRID(ST_MakePoint(
@@ -266,10 +357,28 @@ CREATE TABLE picidae.broadmoor_sightings_2011_scatter AS
         FROM picidae.broadmoor_sightings_2011
     ) p;
 
+DROP TABLE IF EXISTS picidae.broadmoor_sightings_2016;
 CREATE TABLE picidae.broadmoor_sightings_2016 AS
     SELECT *
     FROM picidae.broadmoor_sightings
     WHERE year = 2016;
+
+-- Distinct eBirders
+SELECT COUNT(DISTINCT "recordedBy") FROM picidae.broadmoor_sightings_2016;
+
+-- Total woodpecker sightings
+SELECT SUM("individualCount") FROM picidae.broadmoor_sightings_2016;
+
+-- Total sightings of each species
+SELECT species, SUM("individualCount") AS total
+FROM picidae.broadmoor_sightings_2016
+GROUP BY species
+ORDER BY total DESC;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS observation_count
+FROM picidae.broadmoor_sightings_2016
+GROUP BY season;
 
 CREATE TABLE picidae.broadmoor_sightings_2016_scatter AS
     SELECT ST_SetSRID(ST_MakePoint(
@@ -283,10 +392,28 @@ CREATE TABLE picidae.broadmoor_sightings_2016_scatter AS
         FROM picidae.broadmoor_sightings_2016
     ) p;
 
+DROP TABLE IF EXISTS picidae.broadmoor_sightings_2021;
 CREATE TABLE picidae.broadmoor_sightings_2021 AS
     SELECT *
     FROM picidae.broadmoor_sightings
     WHERE year = 2021;
+
+-- Distinct eBirders
+SELECT COUNT(DISTINCT "recordedBy") FROM picidae.broadmoor_sightings_2021;
+
+-- Total woodpecker sightings
+SELECT SUM("individualCount") FROM picidae.broadmoor_sightings_2021;
+
+-- Total sightings of each species
+SELECT species, SUM("individualCount") AS total
+FROM picidae.broadmoor_sightings_2021
+GROUP BY species
+ORDER BY total DESC;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS observation_count
+FROM picidae.broadmoor_sightings_2021
+GROUP BY season;
 
 CREATE TABLE picidae.broadmoor_sightings_2021_scatter AS
     SELECT ST_SetSRID(ST_MakePoint(
@@ -314,6 +441,7 @@ CREATE TABLE picidae.ipswich_poly AS
     SELECT ST_Transform(ST_Union(ST_SnapToGrid(ipswich_parcels.geom,0.0001)), 4326) AS geom
     FROM picidae.ipswich_parcels;
 
+DROP TABLE IF EXISTS picidae.ipswich_sightings;
 CREATE TABLE picidae.ipswich_sightings AS
     SELECT sightings.*
     FROM picidae.ma_picidae sightings, picidae.ipswich_poly
@@ -324,10 +452,28 @@ SELECT year, SUM("individualCount") FROM picidae.ipswich_sightings
 WHERE year IN (2011, 2016, 2021)
 GROUP BY year;
 
+DROP TABLE IF EXISTS picidae.ipswich_sightings_2011;
 CREATE TABLE picidae.ipswich_sightings_2011 AS
     SELECT *
     FROM picidae.ipswich_sightings
     WHERE year = 2011;
+
+-- Distinct eBirders
+SELECT COUNT(DISTINCT "recordedBy") FROM picidae.ipswich_sightings_2011;
+
+-- Total woodpecker sightings
+SELECT SUM("individualCount") FROM picidae.ipswich_sightings_2011;
+
+-- Total sightings of each species
+SELECT species, SUM("individualCount") AS total
+FROM picidae.ipswich_sightings_2011
+GROUP BY species
+ORDER BY total DESC;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS observation_count
+FROM picidae.ipswich_sightings_2011
+GROUP BY season;
 
 CREATE TABLE picidae.ipswich_sightings_2011_scatter AS
     SELECT ST_SetSRID(ST_MakePoint(
@@ -341,10 +487,28 @@ CREATE TABLE picidae.ipswich_sightings_2011_scatter AS
         FROM picidae.ipswich_sightings_2011
     ) p;
 
+DROP TABLE IF EXISTS picidae.ipswich_sightings_2016;
 CREATE TABLE picidae.ipswich_sightings_2016 AS
     SELECT *
     FROM picidae.ipswich_sightings
     WHERE year = 2016;
+
+-- Distinct eBirders
+SELECT COUNT(DISTINCT "recordedBy") FROM picidae.ipswich_sightings_2016;
+
+-- Total woodpecker sightings
+SELECT SUM("individualCount") FROM picidae.ipswich_sightings_2016;
+
+-- Total sightings of each species
+SELECT species, SUM("individualCount") AS total
+FROM picidae.ipswich_sightings_2016
+GROUP BY species
+ORDER BY total DESC;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS observation_count
+FROM picidae.ipswich_sightings_2016
+GROUP BY season;
 
 CREATE TABLE picidae.ipswich_sightings_2016_scatter AS
     SELECT ST_SetSRID(ST_MakePoint(
@@ -358,10 +522,28 @@ CREATE TABLE picidae.ipswich_sightings_2016_scatter AS
         FROM picidae.ipswich_sightings_2016
     ) p;
 
+DROP TABLE IF EXISTS picidae.ipswich_sightings_2021;
 CREATE TABLE picidae.ipswich_sightings_2021 AS
     SELECT *
     FROM picidae.ipswich_sightings
     WHERE year = 2021;
+
+-- Distinct eBirders
+SELECT COUNT(DISTINCT "recordedBy") FROM picidae.ipswich_sightings_2021;
+
+-- Total woodpecker sightings
+SELECT SUM("individualCount") FROM picidae.ipswich_sightings_2021;
+
+-- Total sightings of each species
+SELECT species, SUM("individualCount") AS total
+FROM picidae.ipswich_sightings_2021
+GROUP BY species
+ORDER BY total DESC;
+
+-- Total individual sightings by season
+SELECT season, SUM("individualCount") AS observation_count
+FROM picidae.ipswich_sightings_2021
+GROUP BY season;
 
 CREATE TABLE picidae.ipswich_sightings_2021_scatter AS
     SELECT ST_SetSRID(ST_MakePoint(
