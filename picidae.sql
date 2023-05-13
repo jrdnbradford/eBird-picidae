@@ -67,6 +67,11 @@ SET season =
         WHEN month in (9, 10, 11) THEN 'autumn'
      END);
 
+-- Create table of MA specific observations
+CREATE TABLE IF NOT EXISTS picidae.ma_picidae_2021 AS
+    SELECT * FROM picidae.picidae
+    WHERE year = 2021;
+
 -- Total observations by species over all MA data
 SELECT species, SUM("individualCount") AS ma_observation_count
 FROM picidae.ma_picidae
@@ -169,6 +174,18 @@ CREATE TABLE picidae.drumlin_sightings AS
     SELECT sightings.*
     FROM picidae.ma_picidae sightings, picidae.drumlin_poly
     WHERE ST_Contains(drumlin_poly.geom, sightings.geom);
+
+CREATE TABLE picidae.drumlin_sightings_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.drumlin_sightings
+    ) p;
 
 SELECT SUM("individualCount") FROM picidae.drumlin_sightings;
 SELECT year, SUM("individualCount") FROM picidae.drumlin_sightings
@@ -282,6 +299,27 @@ FROM picidae.drumlin_sightings_2021
 GROUP BY species
 ORDER BY total DESC;
 
+-- Season-specific tables for Drumlin
+CREATE TABLE picidae.drumlin_sightings_2021_winter AS
+    SELECT *
+    FROM picidae.drumlin_sightings_2021
+    WHERE season = 'winter';
+
+CREATE TABLE picidae.drumlin_sightings_2021_summer AS
+    SELECT *
+    FROM picidae.drumlin_sightings_2021
+    WHERE season = 'summer';
+
+CREATE TABLE picidae.drumlin_sightings_2021_autumn AS
+    SELECT *
+    FROM picidae.drumlin_sightings_2021
+    WHERE season = 'autumn';
+
+CREATE TABLE picidae.drumlin_sightings_2021_spring AS
+    SELECT *
+    FROM picidae.drumlin_sightings_2021
+    WHERE season = 'spring';
+
 -- Total individual sightings by season
 SELECT season, SUM("individualCount") AS observation_count
 FROM picidae.drumlin_sightings_2021
@@ -316,6 +354,18 @@ CREATE TABLE picidae.broadmoor_sightings AS
     SELECT sightings.*
     FROM picidae.ma_picidae sightings, picidae.broadmoor_poly
     WHERE ST_Contains(broadmoor_poly.geom, sightings.geom);
+
+CREATE TABLE picidae.broadmoor_sightings_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.broadmoor_sightings
+    ) p;
 
 SELECT SUM("individualCount") FROM picidae.broadmoor_sightings;
 SELECT year, SUM("individualCount") FROM picidae.broadmoor_sightings
@@ -447,6 +497,18 @@ CREATE TABLE picidae.ipswich_sightings AS
     FROM picidae.ma_picidae sightings, picidae.ipswich_poly
     WHERE ST_Contains(ipswich_poly.geom, sightings.geom);
 
+CREATE TABLE picidae.ipswich_sightings_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.ipswich_sightings
+    ) p;
+
 SELECT SUM("individualCount") FROM picidae.ipswich_sightings;
 SELECT year, SUM("individualCount") FROM picidae.ipswich_sightings
 WHERE year IN (2011, 2016, 2021)
@@ -555,4 +617,73 @@ CREATE TABLE picidae.ipswich_sightings_2021_scatter AS
                random() * 0.00075 AS rad,
                geom
         FROM picidae.ipswich_sightings_2021
+    ) p;
+
+-- Season-specific tables for Ipswich in 2021
+CREATE TABLE picidae.ipswich_sightings_2021_winter AS
+    SELECT *
+    FROM picidae.ipswich_sightings_2021
+    WHERE season = 'winter';
+
+CREATE TABLE picidae.ipswich_sightings_2021_winter_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.ipswich_sightings_2021_winter
+    ) p;
+
+CREATE TABLE picidae.ipswich_sightings_2021_summer AS
+    SELECT *
+    FROM picidae.ipswich_sightings_2021
+    WHERE season = 'summer';
+
+CREATE TABLE picidae.ipswich_sightings_2021_summer_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.ipswich_sightings_2021_summer
+    ) p;
+
+CREATE TABLE picidae.ipswich_sightings_2021_autumn AS
+    SELECT *
+    FROM picidae.ipswich_sightings_2021
+    WHERE season = 'autumn';
+
+CREATE TABLE picidae.ipswich_sightings_2021_autumn_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.ipswich_sightings_2021_autumn
+    ) p;
+
+CREATE TABLE picidae.ipswich_sightings_2021_spring AS
+    SELECT *
+    FROM picidae.ipswich_sightings_2021
+    WHERE season = 'spring';
+
+CREATE TABLE picidae.ipswich_sightings_2021_spring_scatter AS
+    SELECT ST_SetSRID(ST_MakePoint(
+         ST_X(geom) + rad * SIND(ang),
+         ST_Y(geom) + rad * COSD(ang)
+       ), 4326) AS geom
+    FROM (
+        SELECT random() * 360.0 AS ang,
+               random() * 0.00075 AS rad,
+               geom
+        FROM picidae.ipswich_sightings_2021_spring
     ) p;
